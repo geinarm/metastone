@@ -56,4 +56,5 @@ public class Node implements Comparable<Node> {
 	public int compareTo(Node o) {
     	return Double.compare(this.score, o.score);
 	}
+	
 }

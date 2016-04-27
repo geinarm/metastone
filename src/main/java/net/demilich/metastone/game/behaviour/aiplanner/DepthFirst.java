@@ -15,11 +15,11 @@ public class DepthFirst {
 	
 	public Node search(GameContext state, int playerId, List<GameAction> actions) {
 		leafCount = 0;
-		
+		Node root = new Node(null, state, null, playerId); 
 		Node bestNode = null;
 		double bestScore = Double.NEGATIVE_INFINITY;
 		for(GameAction a : actions) {
-			Node n = new Node(null, state, a, playerId);
+			Node n = new Node(root, state, a, playerId);
 			Node bestLeaf = bestLeaf(n);
 			if(bestLeaf.score > bestScore) {
 				bestNode = bestLeaf;

@@ -1,57 +1,70 @@
 package net.demilich.metastone.game.behaviour.aiplanner;
 
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.Iterator;
+import java.util.LinkedList;
 
-import org.slf4j.Logger;
+public class NBestQueue implements Iterable<Node> {
 
-public class NBestQueue {
-
-	private SortedSet<Node> set;
+	private LinkedList<Node> list;
 	private int maxNodes;
 	
 	public NBestQueue(int n) {
-		set = new TreeSet<Node>();
+		list = new LinkedList<Node>();
 		maxNodes = n;
 	}
 	
 	public void add(Node node) {
-		set.add(node);
+		addInOrder(node);
 		
-		if(set.size() > maxNodes) {
-			popTail();
+		if(list.size() > maxNodes) {
+			list.pollLast();
 		}
+	}
+	
+	private void addInOrder(Node node) {
+		if(list.isEmpty()) {
+			list.add(node);
+			return;
+		}
+		
+		int index = 0;
+		while(list.get(index).compareTo(node) > 0) {
+			index++;
+			if(index >= list.size()) {
+				list.addLast(node);
+				return;
+			}
+		}	
+		list.add(index, node);
 	}
 
 	public int getCount() {
-		return set.size();
+		return list.size();
 	}
+	
 	public int getSize() {
 		return maxNodes;
 	}
+	
 	public boolean isEmpty() {
-		return set.isEmpty();
+		return list.isEmpty();
 	}
+	
 	public boolean isFull() {
-		return set.size() >= maxNodes;
+		return list.size() >= maxNodes;
 	}
 	
 	public Node popHead() {
-		if(set.size() == 0) {
-			return null;
-		}
-		Node head = set.last();
-		set.remove(head);
-		return head;
+		return list.pollFirst();
 	}
 	
 	public Node popTail() {
-		if(set.size() == 0) {
-			return null;
-		}
-		Node tail = set.first();
-		set.remove(tail);
-		return tail;
+		return list.pollLast();
+	}
+
+	@Override
+	public Iterator<Node> iterator() {
+		return list.iterator();
 	}
 
 }

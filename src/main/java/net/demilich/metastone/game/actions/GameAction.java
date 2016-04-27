@@ -77,4 +77,31 @@ public abstract class GameAction implements Cloneable {
 	public void setTargetRequirement(TargetSelection targetRequirement) {
 		this.targetRequirement = targetRequirement;
 	}
+	
+	@Override
+	public boolean equals(Object other) {
+		if(other == null) {
+			return false;
+		}
+		if(!(other instanceof GameAction)) {
+			return false;
+		}
+		GameAction otherAction = (GameAction)other;
+		
+		return this.toString().equals(otherAction.toString());
+		
+		/*
+		if(this.actionType != otherAction.actionType) {
+			return false;
+		}
+		if(this.source != otherAction.source) {
+			return false;
+		}
+		if(this.targetKey != otherAction.targetKey) {
+			return false;
+		}
+		
+		return true;
+		*/
+	}
 }

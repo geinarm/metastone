@@ -53,23 +53,10 @@ public class TurnPlanner extends Behaviour {
 
 	@Override
 	public GameAction requestAction(GameContext context, Player player, List<GameAction> validActions) {
-		if(currentPlan != null) {
-			if(currentPlanIndex >= currentPlan.size()) {
-				logger.info("What is this!");
-				GameAction action = currentPlan.get(currentPlan.size()-1);
-				currentPlan = null;
-				return action;
-			}
-			GameAction planAction = currentPlan.get(currentPlanIndex);
-			boolean valid = validActions.contains(planAction);
-			logger.info("I have a plan: {}, {}", valid, planAction);
-			if(planAction.getActionType() == ActionType.END_TURN) {
-				currentPlan = null;
-			}
-			if(valid) {
-				currentPlanIndex ++;
-				return planAction;
-			}
+		GameAction planAction = getPlanAction(validActions);
+		if(planAction != null) {
+			logger.info("I have a Plan: {}", planAction);
+			return planAction;
 		}
 		
 		// for now, do now evaluate battlecry actions
@@ -99,28 +86,43 @@ public class TurnPlanner extends Behaviour {
 		//DepthFirst search = new DepthFirst();
 		DFBB search = new DFBB();
 		Node goalNode = search.search(context, playerId, validActions).popHead();
-		logger.info("New Plan, score {}:", goalNode.score);
-		List<GameAction> plan = goalNode.getPlan();
-		//logger.info("New Plan, leafs {}:", search.getLeafCount());
-		for(GameAction a : plan) {
-			logger.info("-{}", a);
-		}
-		
-		currentPlan = plan;
-		currentPlanIndex = 0;
-		GameAction action = plan.get(currentPlanIndex);
-		currentPlanIndex ++;
-		
-		boolean valid = validActions.contains(action);
-		if(valid) {
-			if(action.getActionType() == ActionType.END_TURN) {
-				currentPlan = null;
-			}
-			return action;
-		} else {
-			currentPlan = null;
+		//Node goalNode = search.search(context, playerId, validActions);
+		setPlan(goalNode);
+		planAction = getPlanAction(validActions);
+		if(planAction == null) {
+			logger.warn("Something is wrong with the plan");
 			return validActions.get(0);
 		}
+
+		logger.info("pAction: {}", planAction);
+		return planAction;
+	}
+	
+	private void setPlan(Node node) {
+		logger.info("New Plan, score: {}", node.score);
+		List<GameAction> plan = node.getPlan();
+		currentPlan = plan;
+		currentPlanIndex = 0;
+	}
+	
+	private GameAction getPlanAction(List<GameAction> validActions) {
+		if(currentPlan == null) {
+			return null;
+		}
+		
+		GameAction planAction = currentPlan.get(currentPlanIndex);
+		for(GameAction a : validActions) {
+			if(a.toString().equals(planAction.toString())) {
+				currentPlanIndex++;
+				if(a.getActionType() == ActionType.END_TURN) {
+					currentPlan = null;
+				}
+				return a;
+			}
+		}
+		
+		currentPlan = null;
+		return null;
 	}
 	
 	@Override
