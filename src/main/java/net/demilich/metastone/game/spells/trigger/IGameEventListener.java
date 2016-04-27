@@ -34,4 +34,14 @@ public interface IGameEventListener {
 	
 	public abstract boolean hasPersistentOwner();
 
+	public abstract boolean oneTurnOnly();
+
+	public abstract boolean isDelayed();
+
+	public abstract void delayTimeDown();
+
+	public abstract void expire();
+	
+	public abstract boolean canFireCondition(GameEvent event);
+
 }

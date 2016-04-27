@@ -1,7 +1,9 @@
 bin
+.settings
 .classpath
 .project
 .gradle
+.idea
 test-output
 report.log
 /~$card_checklist.xlsx

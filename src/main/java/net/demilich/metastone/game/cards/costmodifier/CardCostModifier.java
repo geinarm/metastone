@@ -73,14 +73,11 @@ public class CardCostModifier extends CustomCloneable implements IGameEventListe
 			break;
 
 		}
-		if (getCardType() == null && card.getCardType() != CardType.HERO_POWER) {
-			return true;
-		}
-		if (getCardType() == CardType.SPELL && card.getCardType() == CardType.CHOOSE_ONE) {
+		if (getCardType() == null && !card.getCardType().isCardType(CardType.HERO_POWER)) {
 			return true;
 		}
 		
-		return card.getCardType() == getCardType();
+		return card.getCardType().isCardType(getCardType());
 	}
 	
 	@Override
@@ -95,7 +92,7 @@ public class CardCostModifier extends CustomCloneable implements IGameEventListe
 		return clone;
 	}
 
-	protected void expire() {
+	public void expire() {
 		expired = true;
 	}
 
@@ -228,6 +225,29 @@ public class CardCostModifier extends CustomCloneable implements IGameEventListe
 	@Override
 	public boolean hasPersistentOwner() {
 		return false;
+	}
+
+	@Override
+	public boolean oneTurnOnly() {
+		return false;
+	}
+
+	@Override
+	public boolean isDelayed() {
+		return false;
+	}
+
+	@Override
+	public void delayTimeDown() {
+		
+	}
+
+	@Override
+	public boolean canFireCondition(GameEvent event) {
+		if (expirationTrigger != null) {
+			return expirationTrigger.canFireCondition(event);
+		}
+		return true;
 	}
 
 }

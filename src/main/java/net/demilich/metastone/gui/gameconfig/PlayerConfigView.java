@@ -28,8 +28,11 @@ import net.demilich.metastone.game.cards.CardCatalogue;
 import net.demilich.metastone.game.cards.HeroCard;
 import net.demilich.metastone.game.decks.Deck;
 import net.demilich.metastone.game.decks.DeckFactory;
+import net.demilich.metastone.game.decks.DeckFormat;
 import net.demilich.metastone.game.entities.heroes.HeroClass;
 import net.demilich.metastone.game.entities.heroes.MetaHero;
+import net.demilich.metastone.game.gameconfig.PlayerConfig;
+import net.demilich.metastone.gui.IconFactory;
 import net.demilich.metastone.gui.common.BehaviourStringConverter;
 import net.demilich.metastone.gui.common.DeckStringConverter;
 import net.demilich.metastone.gui.common.HeroStringConverter;
@@ -60,6 +63,8 @@ public class PlayerConfigView extends VBox {
 	private List<Deck> decks = new ArrayList<Deck>();
 
 	private PlayerConfigType selectionHint;
+
+	private DeckFormat deckFormat;
 
 	public PlayerConfigView(PlayerConfigType selectionHint) {
 		this.selectionHint = selectionHint;
@@ -94,7 +99,9 @@ public class PlayerConfigView extends VBox {
 				if (deck.getHeroClass() != HeroClass.DECK_COLLECTION) {
 					continue;
 				}
-				deckList.add(deck);
+				if (deckFormat != null && deckFormat.inSet(deck)) {
+					deckList.add(deck);
+				}
 			}
 		} else {
 			Deck randomDeck = DeckFactory.getRandomDeck(heroClass);
@@ -104,7 +111,9 @@ public class PlayerConfigView extends VBox {
 					continue;
 				}
 				if (deck.getHeroClass() == heroClass || deck.getHeroClass() == HeroClass.ANY) {
-					deckList.add(deck);
+					if (deckFormat != null && deckFormat.inSet(deck)) {
+						deckList.add(deck);
+					}
 				}
 			}
 		}
@@ -136,11 +145,11 @@ public class PlayerConfigView extends VBox {
 		playerConfig.setHideCards(newValue);
 	}
 
-	private void selectHero(HeroCard HeroCard) {
-		Image heroPortrait = HeroCard.getImage();
+	private void selectHero(HeroCard heroCard) {
+		Image heroPortrait = new Image(IconFactory.getHeroIconUrl(heroCard.getHeroClass()));
 		heroIcon.setImage(heroPortrait);
-		heroNameLabel.setText(HeroCard.getName());
-		getPlayerConfig().setHeroCard(HeroCard);
+		heroNameLabel.setText(heroCard.getName());
+		getPlayerConfig().setHeroCard(heroCard);
 		filterDecks();
 	}
 
@@ -185,6 +194,11 @@ public class PlayerConfigView extends VBox {
 		if (configType == PlayerConfigType.SIMULATION || configType == PlayerConfigType.SANDBOX) {
 			hideCardsCheckBox.setVisible(false);
 		}
+	}
+
+	public void setDeckFormat(DeckFormat newDeckFormat) {
+		deckFormat = newDeckFormat;
+		filterDecks();
 	}
 
 }
