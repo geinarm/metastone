@@ -84,9 +84,11 @@ public class TurnPlanner extends Behaviour {
 		playerId = player.getId();
 		
 		//DepthFirst search = new DepthFirst();
-		DFBB search = new DFBB();
-		Node goalNode = search.search(context, playerId, validActions).popHead();
-		//Node goalNode = search.search(context, playerId, validActions);
+		//DFBB search = new DFBB();
+		AlphaBetaTurn search = new AlphaBetaTurn();
+		
+		//Node goalNode = search.search(context, playerId, validActions).popHead();
+		Node goalNode = search.search(context, playerId, validActions);
 		setPlan(goalNode);
 		planAction = getPlanAction(validActions);
 		if(planAction == null) {
@@ -99,6 +101,12 @@ public class TurnPlanner extends Behaviour {
 	}
 	
 	private void setPlan(Node node) {
+		if(node == null) {
+			logger.info("Null plan");
+			currentPlan = null;
+			return;
+		}
+		
 		logger.info("New Plan, score: {}", node.score);
 		List<GameAction> plan = node.getPlan();
 		currentPlan = plan;

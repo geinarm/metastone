@@ -2,7 +2,6 @@ package net.demilich.metastone.game.behaviour.aiplanner;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.PriorityQueue;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +22,7 @@ public class DFBB {
 		Node root = new Node(null, state, null, playerId);
 		
 		NBestQueue leafs = new NBestQueue(10);
-		NBestQueue frontier = new NBestQueue(100);
+		NBestQueue frontier = new NBestQueue(10);
 		frontier.add(root);
 		
 		while(!frontier.isEmpty()) {

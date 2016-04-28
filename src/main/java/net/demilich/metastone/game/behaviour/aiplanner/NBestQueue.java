@@ -57,9 +57,15 @@ public class NBestQueue implements Iterable<Node> {
 	public Node popHead() {
 		return list.pollFirst();
 	}
+	public Node peekHead() {
+		return list.getFirst();
+	}
 	
 	public Node popTail() {
 		return list.pollLast();
+	}
+	public Node peekTail() {
+		return list.getLast();
 	}
 
 	@Override
