@@ -20,5 +20,6 @@ public enum Statistic {
 	HERO_POWER_USED,
 	WEAPONS_EQUIPPED,
 	WEAPONS_PLAYED,
+	THINK_TIME,
 
 }

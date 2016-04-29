@@ -546,7 +546,7 @@ public class GameLogic implements Cloneable {
 
 	public void endTurn(int playerId) {
 		Player player = context.getPlayer(playerId);
-
+		
 		Hero hero = player.getHero();
 		hero.removeAttribute(Attribute.TEMPORARY_ATTACK_BONUS);
 		handleFrozen(hero);

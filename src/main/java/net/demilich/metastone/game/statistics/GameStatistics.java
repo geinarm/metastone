@@ -86,6 +86,10 @@ public class GameStatistics implements Cloneable {
 		add(Statistic.GAMES_WON, 1);
 		updateWinRate();
 	}
+	
+	public void addThinkTime(long ms) {
+		add(Statistic.THINK_TIME, ms);
+	}
 
 	public Object get(Statistic key) {
 		return stats.get(key);

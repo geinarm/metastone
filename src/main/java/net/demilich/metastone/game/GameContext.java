@@ -355,7 +355,9 @@ public class GameContext implements Cloneable, IDisposable {
 			return false;
 		}
 
+		long timestamp = System.currentTimeMillis();
 		GameAction nextAction = getActivePlayer().getBehaviour().requestAction(this, getActivePlayer(), getValidActions());
+		
 		while (!acceptAction(nextAction)) {
 			nextAction = getActivePlayer().getBehaviour().requestAction(this, getActivePlayer(), getValidActions());
 		}
@@ -363,6 +365,11 @@ public class GameContext implements Cloneable, IDisposable {
 			throw new RuntimeException("Behaviour " + getActivePlayer().getBehaviour().getName() + " selected NULL action while "
 					+ getValidActions().size() + " actions were available");
 		}
+		
+		long thinkTime = System.currentTimeMillis() - timestamp;
+		getActivePlayer().getStatistics().addThinkTime(thinkTime);
+		logger.info("ThinkTime: {}", thinkTime);
+		
 		performAction(activePlayer, nextAction);
 
 		return nextAction.getActionType() != ActionType.END_TURN;
