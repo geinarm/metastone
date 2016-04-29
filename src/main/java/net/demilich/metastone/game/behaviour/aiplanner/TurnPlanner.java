@@ -62,10 +62,16 @@ public class TurnPlanner extends Behaviour {
 		// for now, do now evaluate battlecry actions
 		if (validActions.get(0).getActionType() == ActionType.BATTLECRY) {
 			GameAction action = validActions.get(context.getLogic().random(validActions.size()));
-			//logger.info("Battlecry {}", action);
+			//logger.info("BATTLECRY {}", action);
 			currentPlan = null;
 			return action;
 		}
+		if (validActions.get(0).getActionType() == ActionType.DISCOVER) {
+			GameAction action = validActions.get(context.getLogic().random(validActions.size()));
+			//logger.info("DISCOVER {}", action);
+			currentPlan = null;
+			return action;
+		}		
 		
 		if (validActions.size() == 1) {
 			heuristic.onActionSelected(context, player.getId());
@@ -93,6 +99,12 @@ public class TurnPlanner extends Behaviour {
 		planAction = getPlanAction(validActions);
 		if(planAction == null) {
 			logger.warn("Something is wrong with the plan");
+			
+			for(GameAction a : validActions) {
+				logger.info("Valid: {}", a);
+			}
+			logger.info("Planed: {}", planAction);
+			
 			return validActions.get(0);
 		}
 

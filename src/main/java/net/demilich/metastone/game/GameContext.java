@@ -368,7 +368,6 @@ public class GameContext implements Cloneable, IDisposable {
 		
 		long thinkTime = System.currentTimeMillis() - timestamp;
 		getActivePlayer().getStatistics().addThinkTime(thinkTime);
-		logger.info("ThinkTime: {}", thinkTime);
 		
 		performAction(activePlayer, nextAction);
 

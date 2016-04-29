@@ -14,8 +14,8 @@ import net.demilich.metastone.game.behaviour.heuristic.WeightedHeuristic;
 
 public class DFBB {
 
-	private static final int MAX_FRONTIER = 10;
-	private static final int MAX_RESULTS = 10;
+	private static final int MAX_FRONTIER = 100;
+	private static final int MAX_RESULTS = 100;
 	
 	private final Logger logger = LoggerFactory.getLogger(DFBB.class);
 	private final IGameStateHeuristic heuristic = new WeightedHeuristic();

@@ -13,6 +13,8 @@ import net.demilich.metastone.game.behaviour.heuristic.WeightedHeuristic;
 
 public class AlphaBetaTurn {
 
+	private static final int SEARCH_DEPTH = 1;
+	
 	private final Logger logger = LoggerFactory.getLogger(AlphaBetaTurn.class);
 	private final IGameStateHeuristic heuristic = new WeightedHeuristic();
 	private final DFBB search = new DFBB();
@@ -37,7 +39,7 @@ public class AlphaBetaTurn {
 		double bestScore = Double.NEGATIVE_INFINITY;
 		double worstScore = Double.POSITIVE_INFINITY;
 		for(Node n : plans) {
-			double score = alphaBeta(n, 1, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, false);
+			double score = alphaBeta(n, SEARCH_DEPTH, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, false);
 			n.score = score;
 			if(score > bestScore) {
 				bestScore = score;
