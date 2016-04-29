@@ -14,20 +14,27 @@ import net.demilich.metastone.game.behaviour.heuristic.WeightedHeuristic;
 
 public class DFBB {
 
+	private static final int MAX_FRONTIER = 10;
+	private static final int MAX_RESULTS = 10;
+	
 	private final Logger logger = LoggerFactory.getLogger(DFBB.class);
 	private final IGameStateHeuristic heuristic = new WeightedHeuristic();
 	//private final IGameStateHeuristic heuristic = new SimpleHeuristic();
 	
 	public NBestQueue search(GameContext state, int playerId, List<GameAction> actions) {
 		Node root = new Node(null, state, null, playerId);
+		if(state.getActivePlayerId() != playerId) {
+			logger.info("Wrong player");
+			return null;
+		}
 		
-		NBestQueue leafs = new NBestQueue(10);
-		NBestQueue frontier = new NBestQueue(10);
+		NBestQueue leafs = new NBestQueue(MAX_RESULTS);
+		NBestQueue frontier = new NBestQueue(MAX_FRONTIER);
 		frontier.add(root);
 		
 		while(!frontier.isEmpty()) {
 			Node node = frontier.popHead();
-			//Node node = frontier.poll();
+			
 			try {
 				List<Node> childNodes = expandNode(node);
 				for(Node n : childNodes) {
@@ -44,17 +51,8 @@ public class DFBB {
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
-			
-			//logger.info("Frontier: {}", frontier.getCount());
 		}
 		
-		/*
-		logger.info("Candidates:");
-		for(Node n : leafs) {
-			logger.info("- {}", n.score);
-		}
-		logger.info("Best: {}", best.score);
-		*/
 		return leafs;
 	}
 	

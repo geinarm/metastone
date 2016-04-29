@@ -6,7 +6,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import net.demilich.metastone.game.GameContext;
-import net.demilich.metastone.game.Player;
 import net.demilich.metastone.game.TurnState;
 import net.demilich.metastone.game.actions.GameAction;
 import net.demilich.metastone.game.behaviour.heuristic.IGameStateHeuristic;
@@ -16,13 +15,16 @@ public class AlphaBetaTurn {
 
 	private final Logger logger = LoggerFactory.getLogger(AlphaBetaTurn.class);
 	private final IGameStateHeuristic heuristic = new WeightedHeuristic();
+	private final DFBB search = new DFBB();
 	
 	private int leafCount;
 	private int pruneCount;
+	private int playerId;
 	
 	public Node search(GameContext state, int playerId, List<GameAction> actions) {
 		leafCount = 0;
 		pruneCount = 0;
+		this.playerId = playerId;
 		Node root = new Node(null, state, null, playerId);
 		NBestQueue plans = planTurn(root);
 		
@@ -33,15 +35,20 @@ public class AlphaBetaTurn {
 		
 		Node best = plans.peekTail();
 		double bestScore = Double.NEGATIVE_INFINITY;
+		double worstScore = Double.POSITIVE_INFINITY;
 		for(Node n : plans) {
-			double score = alphaBeta(n, 0, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, false);
+			double score = alphaBeta(n, 1, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, false);
+			n.score = score;
 			if(score > bestScore) {
 				bestScore = score;
 				best = n;
 			}
+			if(score < worstScore) {
+				worstScore = score;
+			}
 		}
 		
-		logger.info("Best: {}, leafs: {}, pruned: {}", bestScore, leafCount, pruneCount);
+		logger.info("Best: {}, Worst: {}, leafs: {}, pruned: {}", bestScore, worstScore, leafCount, pruneCount);
 		return best;
 	}
 	
@@ -58,7 +65,6 @@ public class AlphaBetaTurn {
 			node.state.startTurn(playerId);
 		}
 		
-		DFBB search = new DFBB();
 		List<GameAction> actions = node.state.getValidActions();
 		NBestQueue outcomes = search.search(node.state, playerId, actions);
 		
@@ -66,19 +72,19 @@ public class AlphaBetaTurn {
 	}
 	
 	private double alphaBeta(Node node, int depth, double alpha, double beta, boolean maximize) {
-		NBestQueue outcomes = planTurn(node);
 		
 		//Bottom of the search tree
 		if(depth == 0 || node.state.gameDecided()) {
-			//Player player = node.state.getActivePlayer();
-			//Player opponent = node.state.getOpponent(player);
 			
-			double h = heuristic.getScore(node.state, node.player);
+			double h = heuristic.getScore(node.state, this.playerId);
 			node.score = h;
+			
 			//logger.info("Heuristic: {}", h);
 			leafCount ++;
 			return h;
 		}
+		
+		NBestQueue outcomes = planTurn(node);
 		
 		double score;
 		if(maximize) {
@@ -86,6 +92,7 @@ public class AlphaBetaTurn {
 			for(Node n : outcomes) {
 				score = Math.max(score, alphaBeta(n, depth-1, alpha, beta, !maximize));
 				alpha = Math.max(alpha, score);
+				n.score = score;
 				if(beta <= alpha) {
 					//logger.info("Beta cutoff");
 					pruneCount ++;

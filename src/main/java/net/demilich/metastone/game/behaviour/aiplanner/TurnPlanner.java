@@ -109,6 +109,11 @@ public class TurnPlanner extends Behaviour {
 		
 		logger.info("New Plan, score: {}", node.score);
 		List<GameAction> plan = node.getPlan();
+		
+		//for(GameAction a : plan) {
+		//	logger.info("- {}", a);	
+		//}
+		
 		currentPlan = plan;
 		currentPlanIndex = 0;
 	}
